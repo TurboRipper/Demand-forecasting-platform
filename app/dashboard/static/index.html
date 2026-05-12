@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RetailPulse ML Demo Console</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Docker-Native Retail ML Demo</p>
+        <h1>RetailPulse ML</h1>
+        <p class="lede">
+          Multi-model demand forecasting platform for retail. Trigger live sales scenarios,
+          inspect model outputs, and present an industry-grade container architecture in one flow.
+        </p>
+      </div>
+      <div class="hero-panel">
+        <div class="metric">
+          <span>Services</span>
+          <strong>8</strong>
+        </div>
+        <div class="metric">
+          <span>Models</span>
+          <strong>3</strong>
+        </div>
+        <div class="metric">
+          <span>Mode</span>
+          <strong>Planner Ready</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card scenarios-card">
+        <div class="card-head">
+          <h2>Scenario Runner</h2>
+          <button id="refresh-history" class="ghost">Refresh Timeline</button>
+        </div>
+        <div id="scenario-list" class="scenario-list"></div>
+      </div>
+
+      <div class="card result-card">
+        <div class="card-head">
+          <h2>Forecast Summary</h2>
+          <span id="status-pill" class="pill neutral">Awaiting run</span>
+        </div>
+        <div id="forecast-summary" class="empty-state">
+          Run a scenario to inspect the combined replenishment decision from the decision hub.
+        </div>
+      </div>
+    </section>
+
+    <section class="grid lower-grid">
+      <div class="card">
+        <h2>Agent Trace</h2>
+        <div id="agent-trace" class="timeline empty-state">No agent decisions recorded yet.</div>
+      </div>
+
+      <div class="card">
+        <h2>Pipeline Topology</h2>
+        <div class="topology">
+          <span>Dashboard</span>
+          <span>Ingestion</span>
+          <span>Preprocessing</span>
+          <span>Router</span>
+          <span>Demand ML</span>
+          <span>Anomaly ML</span>
+          <span>Stockout ML</span>
+          <span>Hub</span>
+          <span>Agent Orchestrator</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Replenishment Timeline</h2>
+        <div id="timeline" class="timeline empty-state">No forecast events recorded yet.</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+x-retailpulse-service: &retailpulse-service
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: retailpulse-ml-demo:latest
+  restart: unless-stopped
+  networks:
+    - retailpulse-net
+
+services:
+  ingestion:
+    <<: *retailpulse-service
+    command: uvicorn app.ingestion.main:app --host 0.0.0.0 --port 8000
+    environment:
+      PREPROCESSING_URL: http://preprocessing:8000/preprocess
+    depends_on:
+      - preprocessing
+    ports:
+      - "8001:8000"
+
+  preprocessing:
+    <<: *retailpulse-service
+    command: uvicorn app.preprocessing.main:app --host 0.0.0.0 --port 8000
+    environment:
+      ROUTER_URL: http://router:8000/route
+    depends_on:
+      - router
+
+  router:
+    <<: *retailpulse-service
+    command: uvicorn app.router.main:app --host 0.0.0.0 --port 8000
+    environment:
+      FAILURE_MODEL_URL: http://failure-model:8000/predict
+      ANOMALY_MODEL_URL: http://anomaly-model:8000/predict
+      QUALITY_MODEL_URL: http://quality-model:8000/predict
+      INTELLIGENCE_HUB_URL: http://intelligence-hub:8000/aggregate
+      AGENT_ORCHESTRATOR_URL: http://agent-orchestrator:8000/orchestrate
+    depends_on:
+      - failure-model
+      - anomaly-model
+      - quality-model
+      - intelligence-hub
+      - agent-orchestrator
+
+  failure-model:
+    <<: *retailpulse-service
+    command: uvicorn app.models.failure.main:app --host 0.0.0.0 --port 8000
+
+  anomaly-model:
+    <<: *retailpulse-service
+    command: uvicorn app.models.anomaly.main:app --host 0.0.0.0 --port 8000
+
+  quality-model:
+    <<: *retailpulse-service
+    command: uvicorn app.models.quality.main:app --host 0.0.0.0 --port 8000
+
+  intelligence-hub:
+    <<: *retailpulse-service
+    command: uvicorn app.intelligence_hub.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8007:8000"
+
+  agent-orchestrator:
+    <<: *retailpulse-service
+    command: uvicorn app.agent_orchestrator.main:app --host 0.0.0.0 --port 8000
+
+  dashboard:
+    <<: *retailpulse-service
+    command: uvicorn app.dashboard.main:app --host 0.0.0.0 --port 8000
+    environment:
+      INGESTION_URL: http://ingestion:8000/ingest
+      INTELLIGENCE_HUB_BASE_URL: http://intelligence-hub:8000
+      AGENT_ORCHESTRATOR_BASE_URL: http://agent-orchestrator:8000
+    depends_on:
+      - ingestion
+      - intelligence-hub
+      - agent-orchestrator
+    ports:
+      - "8080:8000"
+
+networks:
+  retailpulse-net:
+    driver: bridge
